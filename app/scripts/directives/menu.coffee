@@ -6,6 +6,7 @@ angular.module('angularWidgetsApp').directive 'awMenu', ->
       <div class="aw-menu__item"
         data-ng-repeat="item in items"
         data-ng-click="select(item)"
+        data-ng-mouseenter="activateItem(item)"
         data-ng-class="{'aw-menu__item_active': activeItem() == item, 'aw-menu__item_selected': isSelected(item)}">
         {{item}}
       </div>
@@ -17,18 +18,25 @@ angular.module('angularWidgetsApp').directive 'awMenu', ->
 
   scope:
     items: "="
+    blurable: "&"
+    onSelect: "&"
     selectedItem: "=ngModel"
+
 
   link: (scope) ->
     # Index of highlighted menu item
     # Used for keyboard navigation
-    activeIndex = -1
+    activeIndex = 0
 
     scope.selectedItem = null
 
+    scope.activateItem = (item) ->
+      activeIndex = scope.items.indexOf(item)
+
     scope.select = (item) ->
       scope.selectedItem = item
-      activeIndex = scope.items.indexOf(scope.selectedItem)
+      scope.activateItem(item)
+      scope.onSelect(value: item)
 
     scope.isSelected = (item) ->
       scope.selectedItem == item
@@ -37,7 +45,7 @@ angular.module('angularWidgetsApp').directive 'awMenu', ->
 
     scope.blur = ->
       scope.focused = false
-      activeIndex = -1
+      activeIndex = 0
 
     scope.focus = ->
       scope.focused = true
@@ -56,13 +64,13 @@ angular.module('angularWidgetsApp').directive 'awMenu', ->
       scope.$apply -> scope.blur()
 
     container.bind 'keydown', (event) ->
-      return unless scope.focused
+      return if scope.blurable() && !scope.focused
 
       scope.$apply ->
         switch event.keyCode
           when 38 then scope.navigate(-1)
           when 40 then scope.navigate(+1)
-          when 13 then scope.select(scope.activeItem())
+          when 13 then scope.select(scope.activeItem()) if scope.activeItem()
           else return
 
         event.preventDefault()
