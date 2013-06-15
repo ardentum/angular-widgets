@@ -1,0 +1,21 @@
+/* Will be compiled down to a single stylesheet with your sass files */
+
+.aw-menu {
+    border: solid 1px #ccc;
+}
+
+.aw-menu__item {
+    border-bottom: solid 1px #ccc;
+}
+
+.aw-menu__item_active {
+    background: #eee;
+}
+
+.aw-menu__item_selected {
+    background: #aaa;
+}
+
+input {
+    margin: 5px;
+}
